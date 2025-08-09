@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 import Logo from './Logo';
 import Button from './Button';
-import SectionTitle from './SectionTitle'; // dùng lại nếu bạn muốn giữ style tiêu đề nhất quán
+
 
 const Footer = () => {
   return (
-    <footer className="bg-white border-t pt-10">
+    <footer className="max-w-full bg-white border-t pt-10">
       {/* Upper Footer */}
       <div className="max-w-7xl mx-auto px-4 pb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
         {/* Left: Logo + tagline */}

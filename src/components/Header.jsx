@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import Logo from './Logo';
 import Button from './Button';
@@ -8,14 +9,20 @@ const navLinkClass = ({ isActive }) =>
     : 'text-slate-700 hover:text-blue-600 transition';
 
 const Header = () => {
+  const [open, setOpen] = useState(false);
+
+  const closeMenu = () => setOpen(false);
+
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
-        <Logo />
+        <Link to="/" onClick={closeMenu}>
+          <Logo />
+        </Link>
 
-        {/* Navigation */}
-        <nav className="flex items-center space-x-6">
+        {/* Navigation desktop */}
+        <nav className="hidden md:flex items-center space-x-6">
           <NavLink to="/" className={navLinkClass}>Home</NavLink>
           <NavLink to="/hotels" className={navLinkClass}>Hotels</NavLink>
           <NavLink to="/rooms" className={navLinkClass}>Rooms</NavLink>
@@ -23,8 +30,8 @@ const Header = () => {
           <NavLink to="/contact" className={navLinkClass}>Contact</NavLink>
         </nav>
 
-        {/* Auth Buttons */}
-        <div className="flex items-center space-x-3">
+        {/* Auth Buttons desktop */}
+        <div className="hidden md:flex items-center space-x-3">
           <Link to="/login">
             <Button>Login</Button>
           </Link>
@@ -34,7 +41,54 @@ const Header = () => {
             </button>
           </Link>
         </div>
+
+        {/* Hamburger mobile */}
+        <button
+          className="md:hidden p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onClick={() => setOpen(!open)}
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            {open ? (
+              <path
+                d="M6 18L18 6M6 6l12 12"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            ) : (
+              <path
+                d="M3 6h18M3 12h18M3 18h18"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            )}
+          </svg>
+        </button>
       </div>
+
+      {/* Mobile menu */}
+      {open && (
+        <div className="md:hidden border-t bg-white">
+          <div className="px-4 py-3 space-y-2">
+            <NavLink to="/" className="block py-2" onClick={closeMenu}>Home</NavLink>
+            <NavLink to="/hotels" className="block py-2" onClick={closeMenu}>Hotels</NavLink>
+            <NavLink to="/rooms" className="block py-2" onClick={closeMenu}>Rooms</NavLink>
+            <NavLink to="/about" className="block py-2" onClick={closeMenu}>About</NavLink>
+            <NavLink to="/contact" className="block py-2" onClick={closeMenu}>Contact</NavLink>
+            <div className="pt-3 flex flex-col gap-2">
+              <Link to="/login" onClick={closeMenu}>
+                <Button className="w-full">Login</Button>
+              </Link>
+              <Link to="/register" onClick={closeMenu}>
+                <button className="w-full px-4 py-2 border border-blue-600 text-blue-600 rounded hover:bg-blue-50 transition">
+                  Register
+                </button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
