@@ -1,3 +1,4 @@
+import Footer from '../components/Footer';
 import Header from '../components/Header';
 
 function About() {
@@ -11,6 +12,7 @@ function About() {
           Our mission is to make your travel planning easier and your stays unforgettable.
         </p>
       </main>
+      <Footer />
     </>
   );
 }
