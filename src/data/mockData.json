@@ -1,0 +1,270 @@
+{
+  "rooms": [
+    {
+      "id": 1,
+      "image": "https://img.lottehotel.com/cms/asset/2025/01/31/2280/180712-1-2000-ove-hanoi-hotel.webp",
+      "name": "Blue Origin Fams",
+      "city": "Galle",
+      "country": "Sri Lanka",
+      "rating": 4.9,
+      "reviewsCount": 210,
+      "price": 50,
+      "originalPrice": 70,
+      "discountPercent": 29
+    },
+    {
+      "id": 2,
+      "image": "https://img.lottehotel.com/cms/asset/2025/01/31/2280/180712-1-2000-ove-hanoi-hotel.webp",
+      "name": "Ocean Land",
+      "city": "Trincomalee",
+      "country": "Sri Lanka",
+      "rating": 4.7,
+      "reviewsCount": 120,
+      "price": 22,
+      "originalPrice": 22,
+      "discountPercent": 0
+    },
+    {
+      "id": 3,
+      "image": "https://img.lottehotel.com/cms/asset/2025/01/31/2280/180712-1-2000-ove-hanoi-hotel.webp",
+      "name": "Stark House",
+      "city": "Dehiwala",
+      "country": "Sri Lanka",
+      "rating": 4.6,
+      "reviewsCount": 98,
+      "price": 85,
+      "originalPrice": 110,
+      "discountPercent": 23
+    },
+    {
+      "id": 4,
+      "image": "https://img.lottehotel.com/cms/asset/2025/01/31/2280/180712-1-2000-ove-hanoi-hotel.webp",
+      "name": "Vinna Vill",
+      "city": "Beruwala",
+      "country": "Sri Lanka",
+      "rating": 4.8,
+      "reviewsCount": 156,
+      "price": 62,
+      "originalPrice": 62,
+      "discountPercent": 0
+    },
+    {
+      "id": 5,
+      "image": "https://img.lottehotel.com/cms/asset/2025/01/31/2280/180712-1-2000-ove-hanoi-hotel.webp",
+      "name": "Bobox",
+      "city": "Kandy",
+      "country": "Sri Lanka",
+      "rating": 4.4,
+      "reviewsCount": 75,
+      "price": 72,
+      "originalPrice": 90,
+      "discountPercent": 20
+    },
+    {
+      "id": 6,
+      "image": "https://images.trvl-media.com/lodging/9000000/8830000/8829300/8829295/ef877aae.jpg?impolicy=resizecrop&rw=575&rh=575&ra=fill",
+      "name": "Top View",
+      "city": "Hikkaduwa",
+      "country": "Sri Lanka",
+      "rating": 4.3,
+      "reviewsCount": 54,
+      "price": 40,
+      "originalPrice": 40,
+      "discountPercent": 0
+    },
+    {
+      "id": 7,
+      "image": "https://images.trvl-media.com/lodging/9000000/8830000/8829300/8829295/ef877aae.jpg?impolicy=resizecrop&rw=575&rh=575&ra=fill",
+      "name": "Green Villa",
+      "city": "Kandy",
+      "country": "Sri Lanka",
+      "rating": 4.5,
+      "reviewsCount": 83,
+      "price": 39,
+      "originalPrice": 55,
+      "discountPercent": 29
+    },
+    {
+      "id": 8,
+      "image": "https://images.trvl-media.com/lodging/9000000/8830000/8829300/8829295/ef877aae.jpg?impolicy=resizecrop&rw=575&rh=575&ra=fill",
+      "name": "Woodden Pit",
+      "city": "Ambalangoda",
+      "country": "Sri Lanka",
+      "rating": 4.2,
+      "reviewsCount": 31,
+      "price": 48,
+      "originalPrice": 48,
+      "discountPercent": 0
+    },
+    {
+      "id": 9,
+      "image": "https://images.trvl-media.com/lodging/9000000/8830000/8829300/8829295/ef877aae.jpg?impolicy=resizecrop&rw=575&rh=575&ra=fill",
+      "name": "Palm Resort",
+      "city": "Matara",
+      "country": "Sri Lanka",
+      "rating": 4.9,
+      "reviewsCount": 190,
+      "price": 95,
+      "originalPrice": 120,
+      "discountPercent": 21
+    },
+    {
+      "id": 10,
+      "image": "https://images.trvl-media.com/lodging/9000000/8830000/8829300/8829295/ef877aae.jpg?impolicy=resizecrop&rw=575&rh=575&ra=fill",
+      "name": "Sunset Paradise",
+      "city": "Negombo",
+      "country": "Sri Lanka",
+      "rating": 4.6,
+      "reviewsCount": 142,
+      "price": 65,
+      "originalPrice": 80,
+      "discountPercent": 19
+    },
+    {
+      "id": 11,
+      "image": "https://www.hoteldel.com/wp-content/uploads/2021/01/hotel-del-coronado-views-suite-K1TOS1-K1TOJ1-1600x900-1.jpg",
+      "name": "Lotus Inn",
+      "city": "Colombo",
+      "country": "Sri Lanka",
+      "rating": 4.1,
+      "reviewsCount": 44,
+      "price": 30,
+      "originalPrice": 30,
+      "discountPercent": 0
+    },
+    {
+      "id": 12,
+      "image": "https://www.hoteldel.com/wp-content/uploads/2021/01/hotel-del-coronado-views-suite-K1TOS1-K1TOJ1-1600x900-1.jpg",
+      "name": "Coconut Bay",
+      "city": "Jaffna",
+      "country": "Sri Lanka",
+      "rating": 4.5,
+      "reviewsCount": 86,
+      "price": 58,
+      "originalPrice": 75,
+      "discountPercent": 23
+    },
+    {
+      "id": 13,
+      "image": "https://www.hoteldel.com/wp-content/uploads/2021/01/hotel-del-coronado-views-suite-K1TOS1-K1TOJ1-1600x900-1.jpg",
+      "name": "The View Hotel",
+      "city": "Ella",
+      "country": "Sri Lanka",
+      "rating": 4.7,
+      "reviewsCount": 133,
+      "price": 77,
+      "originalPrice": 77,
+      "discountPercent": 0
+    },
+    {
+      "id": 14,
+      "image": "https://www.hoteldel.com/wp-content/uploads/2021/01/hotel-del-coronado-views-suite-K1TOS1-K1TOJ1-1600x900-1.jpg",
+      "name": "White Sands",
+      "city": "Kalpitiya",
+      "country": "Sri Lanka",
+      "rating": 4.3,
+      "reviewsCount": 66,
+      "price": 42,
+      "originalPrice": 60,
+      "discountPercent": 30
+    },
+    {
+      "id": 15,
+      "image": "https://www.hoteldel.com/wp-content/uploads/2021/01/hotel-del-coronado-views-suite-K1TOS1-K1TOJ1-1600x900-1.jpg",
+      "name": "Golden Palm",
+      "city": "Batticaloa",
+      "country": "Sri Lanka",
+      "rating": 4.8,
+      "reviewsCount": 178,
+      "price": 88,
+      "originalPrice": 110,
+      "discountPercent": 20
+    },
+    {
+      "id": 16,
+      "image": "https://www.hoteldel.com/wp-content/uploads/2021/01/hotel-del-coronado-views-suite-K1TOS1-K1TOJ1-1600x900-1.jpg",
+      "name": "Jungle Retreat",
+      "city": "Sinharaja",
+      "country": "Sri Lanka",
+      "rating": 4.6,
+      "reviewsCount": 104,
+      "price": 70,
+      "originalPrice": 70,
+      "discountPercent": 0
+    },
+    {
+      "id": 17,
+      "image": "https://www.vn.kayak.com/rimg/kimg/d1/04/08d793fa28a68cda.jpg?width=1366&height=768&crop=true",
+      "name": "Seaside Bliss",
+      "city": "Tangalle",
+      "country": "Sri Lanka",
+      "rating": 4.4,
+      "reviewsCount": 91,
+      "price": 63,
+      "originalPrice": 85,
+      "discountPercent": 26
+    },
+    {
+      "id": 18,
+      "image": "https://www.vn.kayak.com/rimg/kimg/d1/04/08d793fa28a68cda.jpg?width=1366&height=768&crop=true",
+      "name": "Coral Bay",
+      "city": "Mirissa",
+      "country": "Sri Lanka",
+      "rating": 4.2,
+      "reviewsCount": 59,
+      "price": 48,
+      "originalPrice": 48,
+      "discountPercent": 0
+    },
+    {
+      "id": 19,
+      "image": "https://www.vn.kayak.com/rimg/kimg/d1/04/08d793fa28a68cda.jpg?width=1366&height=768&crop=true",
+      "name": "Lagoon Edge",
+      "city": "Mannar",
+      "country": "Sri Lanka",
+      "rating": 4.5,
+      "reviewsCount": 74,
+      "price": 55,
+      "originalPrice": 70,
+      "discountPercent": 21
+    },
+    {
+      "id": 20,
+      "image": "https://www.vn.kayak.com/rimg/kimg/d1/04/08d793fa28a68cda.jpg?width=1366&height=768&crop=true",
+      "name": "Island Escape",
+      "city": "Hambantota",
+      "country": "Sri Lanka",
+      "rating": 4.9,
+      "reviewsCount": 200,
+      "price": 102,
+      "originalPrice": 130,
+      "discountPercent": 22
+    }
+  ],
+  "reviews": [
+    {
+      "id": 1,
+      "name": "Nguyen Minh",
+      "date": "2025-07-15",
+      "rating": 4.5,
+      "comment": "Phòng sạch sẽ, view đẹp. Nhân viên thân thiện!",
+      "roomName": "Deluxe Sea View"
+    },
+    {
+      "id": 2,
+      "name": "Tran Thu",
+      "date": "2025-06-02",
+      "rating": 5,
+      "comment": "Vị trí trung tâm, rất tiện đi lại. Sẽ quay lại lần sau.",
+      "roomName": "Deluxe Sea View"
+    },
+    {
+      "id": 3,
+      "name": "Le Hoang",
+      "date": "2025-05-20",
+      "rating": 3.5,
+      "comment": "Ổn trong tầm giá, bữa sáng có thể đa dạng hơn.",
+      "roomName": "Deluxe Sea View"
+    }
+  ]
+}
