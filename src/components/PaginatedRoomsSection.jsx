@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import HotelCard from "./HotelCard";
 import Pagination from "./Pagination";
-import SectionTitle from "./SectionTitle"; // ✅ dùng lại component title
+import SectionTitle from "./SectionTitle"; 
 
 export default function PaginatedRoomsSection({
   title,
@@ -30,7 +30,7 @@ export default function PaginatedRoomsSection({
 
   return (
     <section className="max-w-7xl mx-auto px-4 mt-10">
-      <SectionTitle title={title} /> {/* ✅ dùng lại component */}
+      <SectionTitle title={title} />
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {pageItems.map((r) => (
           <HotelCard key={r.id} {...r} />
