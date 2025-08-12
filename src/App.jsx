@@ -3,6 +3,7 @@ import Home from './pages/Home'
 import About from './pages/About';
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import RoomDetail from './pages/RoomDetail';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Route path="/about" element={<About />} />
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/rooms/:id" element={<RoomDetail />} />
     </Routes>
   )
 }

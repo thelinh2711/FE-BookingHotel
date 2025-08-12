@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import Logo from "../components/Logo";
 import Button from "../components/Button";
 import InputField from "../components/InputField";
-import bgImg from "../assets/register-bg.png"; // đổi sang ảnh bạn có
+import bgImg from "../assets/register-bg.png"; 
 
 const Register = () => {
   return (
