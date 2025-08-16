@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
-const InputField = ({ label, type = "text", placeholder }) => {
+const InputField = ({ label, type = "text", placeholder, ...rest }) => {
   const [showPassword, setShowPassword] = useState(false);
-
   const isPassword = type === "password";
 
   return (
@@ -17,6 +16,7 @@ const InputField = ({ label, type = "text", placeholder }) => {
         <input
           type={isPassword && showPassword ? "text" : type}
           placeholder={placeholder}
+          {...rest}  // ✅ Truyền value + onChange từ Register.jsx
           className="w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         {isPassword && (
