@@ -1,13 +1,40 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Calendar } from 'lucide-react';
 import Button from './Button';
 
 const BookingCard = ({ room }) => {
+  const navigate = useNavigate();
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [guests, setGuests] = useState(2);
-  
+
   const hasDiscount = room.discountPercent > 0;
+
+  const handleBookNow = () => {
+    // Chuyển đổi giá từ USD sang VND (1 USD = 25,000 VND)
+    const priceInVND = room.price * 25000;
+
+    // Tạo object chứa thông tin booking
+    const bookingData = {
+      room: {
+        id: room.id,
+        name: room.name,
+        price: priceInVND,
+        image: room.image,
+        amenities: ["Wifi miễn phí", "Bãi đậu xe", "Bữa sáng", "Hồ bơi"],
+        maxGuests: 4
+      },
+      checkIn,
+      checkOut,
+      guests
+    };
+
+    // Điều hướng đến trang booking với state
+    navigate('/booking', {
+      state: bookingData
+    });
+  };
   
   return (
     <div className="sticky top-24 bg-white rounded-2xl border p-6 shadow-lg">
@@ -75,7 +102,10 @@ const BookingCard = ({ room }) => {
         </div>
       </div>
 
-      <Button className="w-full justify-center mb-3">
+      <Button
+        className="w-full justify-center mb-3"
+        onClick={handleBookNow}
+      >
         Book Now
       </Button>
       
