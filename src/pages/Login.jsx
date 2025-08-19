@@ -5,6 +5,7 @@ import Button from "../components/Button";
 import bgImg from "../assets/register-bg.png";
 import { Mail, Lock } from "lucide-react";
 import authApi from "../api/authApi";
+import SocialLoginButtons from "../components/SocialLoginButtons";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -18,14 +19,13 @@ const Login = () => {
 
     try {
       const res = await authApi.login(email, password);
-      console.log("Login response:", res); // vì res chính là data 
+      console.log("Login response:", res);
       const token = res?.result?.token;
 
       if (token) {
         localStorage.setItem("token", token);
         setMessage("✅ Đăng nhập thành công!");
 
-        // Giải mã JWT payload
         const payload = JSON.parse(atob(token.split(".")[1]));
         const role = payload.scope || payload.role || "";
 
@@ -44,7 +44,6 @@ const Login = () => {
       setMessage("❌ Sai email hoặc mật khẩu!");
     }
   };
-
 
   return (
     <div className="min-h-screen bg-white">
@@ -74,6 +73,21 @@ const Login = () => {
             <p className="text-slate-500 mb-8">
               Please enter your details to sign in
             </p>
+
+            {/* Social login buttons */}
+            <SocialLoginButtons />
+
+            {/* Divider */}
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-slate-500">
+                  Or continue with
+                </span>
+              </div>
+            </div>
 
             {/* Login Form */}
             <form className="space-y-4" onSubmit={handleSubmit}>
@@ -111,19 +125,6 @@ const Login = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
-                  />
-                  <span className="text-sm text-slate-600">Remember me</span>
-                </label>
-                <a href="#" className="text-sm text-blue-600 hover:underline">
-                  Forgot password?
-                </a>
-              </div>
-
               <Button type="submit" className="w-full justify-center py-2.5 text-base">
                 Sign in
               </Button>
@@ -146,18 +147,6 @@ const Login = () => {
                 </Link>
               </p>
             </div>
-
-            {/* Terms */}
-            <p className="mt-6 text-xs text-center text-slate-500">
-              By signing in, you agree to our{" "}
-              <a href="#" className="text-blue-600 hover:underline">
-                Terms of Service
-              </a>{" "}
-              and{" "}
-              <a href="#" className="text-blue-600 hover:underline">
-                Privacy Policy
-              </a>
-            </p>
           </div>
         </div>
       </div>
