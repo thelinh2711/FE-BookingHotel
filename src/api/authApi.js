@@ -1,4 +1,3 @@
-// src/api/authApi.js
 import api from "./api";
 
 const authApi = {
@@ -14,6 +13,19 @@ const authApi = {
     }
 
     return response.data;
+  },
+
+  getInfo: async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return null;
+
+    const response = await api.get("api/users/info", {
+      headers: {
+        Authorization: `Bearer ${token}`, 
+      },
+    });
+
+    return response.data; 
   },
 };
 

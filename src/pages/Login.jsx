@@ -1,13 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import Logo from "../components/Logo";
 import Button from "../components/Button";
 import bgImg from "../assets/register-bg.png";
 import { Mail, Lock } from "lucide-react";
 import authApi from "../api/authApi";
+import { AuthContext } from "../context/AuthContext"; // 👈 thêm
 
 const Login = () => {
   const navigate = useNavigate();
+  const { fetchUser } = useContext(AuthContext); // 👈 lấy từ context
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,24 +20,17 @@ const Login = () => {
 
     try {
       const res = await authApi.login(email, password);
-      console.log("Login response:", res); // vì res chính là data 
       const token = res?.result?.token;
 
       if (token) {
         localStorage.setItem("token", token);
         setMessage("✅ Đăng nhập thành công!");
 
-        // Giải mã JWT payload
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        const role = payload.scope || payload.role || "";
+        // Gọi fetchUser để lấy info user từ backend
+        await fetchUser();
 
-        if (role.includes("ADMIN")) {
-          alert("🚧 Trang admin đang phát triển");
-        } else if (role.includes("USER")) {
-          navigate("/home");
-        } else {
-          setMessage("❌ Không xác định được quyền truy cập!");
-        }
+        // Điều hướng về trang chủ
+        navigate("/");
       } else {
         setMessage("❌ Không tìm thấy token trong response!");
       }
@@ -44,7 +39,6 @@ const Login = () => {
       setMessage("❌ Sai email hoặc mật khẩu!");
     }
   };
-
 
   return (
     <div className="min-h-screen bg-white">
@@ -124,7 +118,10 @@ const Login = () => {
                 </a>
               </div>
 
-              <Button type="submit" className="w-full justify-center py-2.5 text-base">
+              <Button
+                type="submit"
+                className="w-full justify-center py-2.5 text-base"
+              >
                 Sign in
               </Button>
             </form>
