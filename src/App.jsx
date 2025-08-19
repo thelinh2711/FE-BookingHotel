@@ -5,6 +5,10 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import RoomDetail from './pages/RoomDetail';
 import Booking from './pages/Booking';
+
+import PaymentConfirmation from './pages/PaymentConfirmation';
+import MyOrders from './pages/MyOrders';
+
 import AdminLayout from './pages/admin/AdminLayout';
 import Dashboard from './pages/admin/Dashboard';
 import RoomsManagement from './pages/admin/RoomsManagement';
@@ -22,6 +26,8 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/rooms/:id" element={<RoomDetail />} />
       <Route path="/booking" element={<Booking />} />
+      <Route path="/booking/confirm" element={<PaymentConfirmation />} />
+      <Route path="/orders" element={<MyOrders />} />
 
       {/* Admin Routes */}
       <Route path="/admin" element={<AdminLayout />}>
