@@ -5,7 +5,8 @@ import Button from "../components/Button";
 import bgImg from "../assets/register-bg.png";
 import { Mail, Lock } from "lucide-react";
 import authApi from "../api/authApi";
-import { AuthContext } from "../context/AuthContext"; // 👈 thêm
+import { AuthContext } from "../context/AuthContext"; // 👈 từ HEAD
+import SocialLoginButtons from "../components/SocialLoginButtons"; // 👈 từ main
 
 const Login = () => {
   const navigate = useNavigate();
@@ -20,6 +21,8 @@ const Login = () => {
 
     try {
       const res = await authApi.login(email, password);
+      console.log("Login response:", res); // 👈 từ main
+
       const token = res?.result?.token;
 
       if (token) {
@@ -28,6 +31,10 @@ const Login = () => {
 
         // Gọi fetchUser để lấy info user từ backend
         await fetchUser();
+
+        // Giữ thêm decode payload từ main (phòng khi cần dùng role)
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        const role = payload.scope || payload.role || "";
 
         // Điều hướng về trang chủ
         navigate("/");
@@ -69,6 +76,21 @@ const Login = () => {
               Please enter your details to sign in
             </p>
 
+            {/* Social login buttons */}
+            <SocialLoginButtons />
+
+            {/* Divider */}
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-slate-500">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+
             {/* Login Form */}
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
@@ -105,6 +127,7 @@ const Login = () => {
                 </div>
               </div>
 
+              {/* Remember me + forgot password */}
               <div className="flex items-center justify-between">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -143,18 +166,6 @@ const Login = () => {
                 </Link>
               </p>
             </div>
-
-            {/* Terms */}
-            <p className="mt-6 text-xs text-center text-slate-500">
-              By signing in, you agree to our{" "}
-              <a href="#" className="text-blue-600 hover:underline">
-                Terms of Service
-              </a>{" "}
-              and{" "}
-              <a href="#" className="text-blue-600 hover:underline">
-                Privacy Policy
-              </a>
-            </p>
           </div>
         </div>
       </div>
