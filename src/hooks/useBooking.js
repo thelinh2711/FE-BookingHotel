@@ -1,19 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 export const useBooking = () => {
+  const location = useLocation();
   const [formData, setFormData] = useState({
     // Thông tin khách hàng
     fullName: '',
     phone: '',
     email: '',
     notes: '',
-    
+
     // Thông tin đặt phòng
     checkIn: '',
     checkOut: '',
     guests: 1,
     rooms: 1,
-    
+
     // Phương thức thanh toán
     paymentMethod: 'credit-card',
     cardNumber: '',
@@ -24,16 +26,32 @@ export const useBooking = () => {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Dữ liệu mẫu cho phòng được chọn
-  const selectedRoom = {
+  const [selectedRoom, setSelectedRoom] = useState({
     id: 1,
     name: "Deluxe Ocean View",
     price: 2500000,
     image: "/api/placeholder/400/300",
     amenities: ["Wifi miễn phí", "Bãi đậu xe", "Bữa sáng", "Hồ bơi"],
     maxGuests: 2
-  };
+  });
+
+  // Nhận dữ liệu từ navigation state
+  useEffect(() => {
+    if (location.state) {
+      const { room, checkIn, checkOut, guests } = location.state;
+
+      if (room) {
+        setSelectedRoom(room);
+      }
+
+      setFormData(prev => ({
+        ...prev,
+        checkIn: checkIn || '',
+        checkOut: checkOut || '',
+        guests: guests || 1
+      }));
+    }
+  }, [location.state]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
