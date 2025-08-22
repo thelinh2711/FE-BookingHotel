@@ -30,6 +30,7 @@ function App() {
       <Route path="/booking" element={<Booking />} />
       <Route path="/booking/confirm" element={<PaymentConfirmation />} />
       <Route path="/orders" element={<MyOrders />} />
+    
 
       {/* Admin Routes */}
       <Route path="/admin" element={<AdminLayout />}>
