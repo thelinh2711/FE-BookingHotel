@@ -1,14 +1,16 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import Logo from "../components/Logo";
 import Button from "../components/Button";
 import bgImg from "../assets/register-bg.png";
 import { Mail, Lock } from "lucide-react";
 import authApi from "../api/authApi";
-import SocialLoginButtons from "../components/SocialLoginButtons";
+import { AuthContext } from "../context/AuthContext"; // 👈 từ HEAD
+import SocialLoginButtons from "../components/SocialLoginButtons"; // 👈 từ main
 
 const Login = () => {
   const navigate = useNavigate();
+  const { fetchUser } = useContext(AuthContext); // 👈 lấy từ context
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,23 +21,23 @@ const Login = () => {
 
     try {
       const res = await authApi.login(email, password);
-      console.log("Login response:", res);
+      console.log("Login response:", res); // 👈 từ main
+
       const token = res?.result?.token;
 
       if (token) {
         localStorage.setItem("token", token);
         setMessage("✅ Đăng nhập thành công!");
 
+        // Gọi fetchUser để lấy info user từ backend
+        await fetchUser();
+
+        // Giữ thêm decode payload từ main (phòng khi cần dùng role)
         const payload = JSON.parse(atob(token.split(".")[1]));
         const role = payload.scope || payload.role || "";
 
-        if (role.includes("ADMIN")) {
-          alert("🚧 Trang admin đang phát triển");
-        } else if (role.includes("USER")) {
-          navigate("/home");
-        } else {
-          setMessage("❌ Không xác định được quyền truy cập!");
-        }
+        // Điều hướng về trang chủ
+        navigate("/");
       } else {
         setMessage("❌ Không tìm thấy token trong response!");
       }
@@ -125,7 +127,24 @@ const Login = () => {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full justify-center py-2.5 text-base">
+              {/* Remember me + forgot password */}
+              <div className="flex items-center justify-between">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
+                  />
+                  <span className="text-sm text-slate-600">Remember me</span>
+                </label>
+                <a href="#" className="text-sm text-blue-600 hover:underline">
+                  Forgot password?
+                </a>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full justify-center py-2.5 text-base"
+              >
                 Sign in
               </Button>
             </form>

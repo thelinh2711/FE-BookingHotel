@@ -9,6 +9,21 @@ const authApi = {
     return response.data;
   },
 
+  // Lấy thông tin user từ token
+  getInfo: async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return null;
+
+    const response = await api.get("api/users/info", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  },
+
+  // Login bằng Google
   getGoogleLoginUrl: async () => {
     const response = await api.get("/auth/google/url");
     return response.data;
