@@ -1,10 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import authApi from "../api/authApi";
+import { AuthContext } from "../context/AuthContext"; // ⚡ đúng path tới AuthContext
 
 const GoogleCallback = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { setUser } = useContext(AuthContext); // ✅ lấy setUser từ context
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -13,10 +15,15 @@ const GoogleCallback = () => {
     if (code) {
       authApi.googleLogin(code)
         .then(res => {
-          localStorage.setItem("token", res.token);
-          localStorage.setItem("refreshToken", res.refreshToken);
-          console.log(res.token);
-          console.log(res.refreshToken);
+          // Lưu token
+          if (res.token) localStorage.setItem("token", res.token);
+          if (res.refreshToken) localStorage.setItem("refreshToken", res.refreshToken);
+
+          // ✅ cập nhật user ngay, không cần reload
+          if (res.user) {
+            setUser(res.user);
+          }
+
           navigate("/");
         })
         .catch(err => {
@@ -26,7 +33,7 @@ const GoogleCallback = () => {
     } else {
       navigate("/login?error=oauth_failed");
     }
-  }, [location, navigate]);
+  }, [location, navigate, setUser]);
 
   return <div>Loading...</div>;
 };

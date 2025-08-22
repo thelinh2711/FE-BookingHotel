@@ -34,14 +34,15 @@ const SocialLoginButtons = () => {
     <div className="space-y-3 mb-6">
       <Button
         onClick={() => handleLogin("google")}
-        className="w-full flex items-center justify-center gap-2 py-2.5 text-base border border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+        className="w-full flex items-center justify-center gap-2 py-2.5 text-base border border-slate-300 bg-white !text-slate-700 hover:bg-slate-50"
       >
         <FcGoogle size={20} />
         Sign in with Google
       </Button>
+
       <Button
         onClick={() => handleLogin("facebook")}
-        className="w-full flex items-center justify-center gap-2 py-2.5 text-base border border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+        className="w-full flex items-center justify-center gap-2 py-2.5 text-base border border-slate-300 bg-white !text-slate-700 hover:bg-slate-50"
       >
         <FaFacebook size={20} className="text-blue-600" />
         Sign in with Facebook

@@ -5,6 +5,7 @@ import Button from "./Button";
 import { AuthContext } from "../context/AuthContext"; // 👈 thêm
 import { ChevronDown } from "lucide-react";
 import defaultAvatar from "../assets/User-avatar.png";
+import { useNavigate } from "react-router-dom";
 
 const navLinkClass = ({ isActive }) =>
   isActive
@@ -15,6 +16,7 @@ const Header = () => {
   const [open, setOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false); // 👈 menu user
   const { user, logout } = useContext(AuthContext); // 👈 lấy user + logout
+  const navigate = useNavigate();
 
   const closeMenu = () => setOpen(false);
 
@@ -83,9 +85,10 @@ const Header = () => {
                     Profile
                   </Link>
                   <button
-                    onClick={() => {
-                      logout();
+                    onClick={async () => {
+                      await logout(); // 👈 giờ là async
                       setMenuOpen(false);
+                      navigate("/login");
                     }}
                     className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-slate-100"
                   >
@@ -164,11 +167,12 @@ const Header = () => {
                     Profile
                   </Link>
                   <button
-                    onClick={() => {
-                      logout();
-                      closeMenu();
+                    onClick={async () => {
+                      await logout(); // 👈 giờ là async
+                      setMenuOpen(false);
+                      navigate("/login");
                     }}
-                    className="block w-full text-left px-4 py-2 text-red-600 hover:bg-slate-100 rounded"
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-slate-100"
                   >
                     Logout
                   </button>

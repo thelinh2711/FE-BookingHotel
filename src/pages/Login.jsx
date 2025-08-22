@@ -5,41 +5,55 @@ import Button from "../components/Button";
 import bgImg from "../assets/register-bg.png";
 import { Mail, Lock } from "lucide-react";
 import authApi from "../api/authApi";
-import { AuthContext } from "../context/AuthContext"; // 👈 từ HEAD
-import SocialLoginButtons from "../components/SocialLoginButtons"; // 👈 từ main
+import { AuthContext } from "../context/AuthContext";
+import SocialLoginButtons from "../components/SocialLoginButtons";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { fetchUser } = useContext(AuthContext); // 👈 lấy từ context
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
+  const { setUser } = useContext(AuthContext);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setMessage(""); // reset message cũ
     try {
-      const res = await authApi.login(email, password);
-      console.log("Login response:", res); // 👈 từ main
+      // gọi API login
+      const res = await authApi.login({ email, password });
+      console.log("Login response:", res);
 
       const token = res?.result?.token;
-
-      if (token) {
-        localStorage.setItem("token", token);
-        setMessage("✅ Đăng nhập thành công!");
-
-        // Gọi fetchUser để lấy info user từ backend
-        await fetchUser();
-
-        // Giữ thêm decode payload từ main (phòng khi cần dùng role)
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        const role = payload.scope || payload.role || "";
-
-        // Điều hướng về trang chủ
-        navigate("/");
-      } else {
+      if (!token) {
         setMessage("❌ Không tìm thấy token trong response!");
+        return;
+      }
+
+      // lưu token vào localStorage
+      localStorage.setItem("token", token);
+
+      // lấy user info
+      const userData = await authApi.getInfo();
+      console.log("User info:", userData);
+      if (!userData) {
+        setMessage("❌ Không lấy được thông tin user!");
+        return;
+      }
+
+      // set vào context
+      setUser(userData);
+      setMessage("✅ Đăng nhập thành công!");
+
+      // lấy danh sách role
+      const roles = userData.roles?.map(r => r.name) || [];
+
+      // điều hướng theo role
+      if (roles.includes("ADMIN")) {
+        navigate("/admin");
+      } else {
+        navigate("/");
       }
     } catch (err) {
       console.error("Login error:", err);
@@ -151,7 +165,15 @@ const Login = () => {
 
             {/* Message */}
             {message && (
-              <p className="mt-4 text-center text-sm text-red-500">{message}</p>
+              <p
+                className={`mt-4 text-center text-sm ${
+                  message.includes("✅")
+                    ? "text-green-600"
+                    : "text-red-500"
+                }`}
+              >
+                {message}
+              </p>
             )}
 
             {/* Sign up link */}
