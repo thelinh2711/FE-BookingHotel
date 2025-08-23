@@ -26,7 +26,7 @@ export default function HotelCard({
 
         {/* Badge giá */}
         <div className="absolute top-2 right-2 px-2 py-1 text-xs bg-blue-600 text-white rounded">
-          ${price} <span className="opacity-80">/ night</span>
+          {price}VND <span className="opacity-80">/ night</span>
         </div>
 
         {/* Badge giảm giá / phổ biến */}
@@ -55,7 +55,7 @@ export default function HotelCard({
         {hasDiscount && (
           <div className="mt-1 text-sm">
             <span className="text-slate-400 line-through mr-2">
-              ${originalPrice}
+              {originalPrice}VND
             </span>
             <span className="text-green-600 font-medium">Save {discountPercent}%</span>
           </div>
