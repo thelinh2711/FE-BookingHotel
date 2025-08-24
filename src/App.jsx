@@ -1,3 +1,4 @@
+// src/App.jsx - Updated with payment routes
 import { Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import About from './pages/About';
@@ -5,9 +6,11 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import RoomDetail from './pages/RoomDetail';
 import Booking from './pages/Booking';
+import Cart from './pages/Cart';
 import GoogleCallback from './components/GoogleCallback';
 
 import PaymentConfirmation from './pages/PaymentConfirmation';
+import PaymentSuccess from './pages/PaymentSuccess';
 import MyOrders from './pages/MyOrders';
 
 import AdminLayout from './pages/admin/AdminLayout';
@@ -27,11 +30,15 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/auth/google/callback" element={<GoogleCallback />} />
       <Route path="/rooms/:id" element={<RoomDetail />} />
+      
+      {/* Booking & Payment Routes */}
       <Route path="/booking" element={<Booking />} />
+      <Route path="/cart" element={<Cart />} />
       <Route path="/booking/confirm" element={<PaymentConfirmation />} />
+      <Route path="/payment/success" element={<PaymentSuccess />} />
+      
       <Route path="/orders" element={<MyOrders />} />
     
-
       {/* Admin Routes */}
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Dashboard />} />

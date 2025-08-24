@@ -1,11 +1,11 @@
 import React, { useState, useContext } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import Logo from "./Logo";
 import Button from "./Button";
-import { AuthContext } from "../context/AuthContext"; // 👈 thêm
-import { ChevronDown } from "lucide-react";
+import { AuthContext } from "../context/AuthContext"; 
+import { CartContext } from "../context/CartContext"; // 👈 thêm CartContext
+import { ChevronDown, ShoppingCart } from "lucide-react"; 
 import defaultAvatar from "../assets/User-avatar.png";
-import { useNavigate } from "react-router-dom";
 
 const navLinkClass = ({ isActive }) =>
   isActive
@@ -14,8 +14,9 @@ const navLinkClass = ({ isActive }) =>
 
 const Header = () => {
   const [open, setOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false); // 👈 menu user
-  const { user, logout } = useContext(AuthContext); // 👈 lấy user + logout
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { user, logout } = useContext(AuthContext);
+  const { cart } = useContext(CartContext); // 👈 lấy cart
   const navigate = useNavigate();
 
   const closeMenu = () => setOpen(false);
@@ -48,7 +49,7 @@ const Header = () => {
         </nav>
 
         {/* Auth desktop */}
-        <div className="hidden md:flex items-center space-x-3">
+        <div className="hidden md:flex items-center space-x-4">
           {!user ? (
             <>
               <Link to="/login">
@@ -61,42 +62,60 @@ const Header = () => {
               </Link>
             </>
           ) : (
-            <div className="relative">
-              <button
-                className="flex items-center gap-2 px-3 py-2 rounded hover:bg-slate-100"
-                onClick={() => setMenuOpen(!menuOpen)}
+            <>
+              {/* Giỏ hàng */}
+              <Link
+                to="/cart"
+                className="relative flex items-center justify-center p-2 rounded-lg hover:bg-slate-100 transition"
+                title="My Bookings"
               >
-                <img
-                  src={user?.avatar || defaultAvatar}
-                  alt="avatar"
-                  className="w-8 h-8 rounded-full"
-                />
-                <span className="text-slate-700">{user.name || user.email}</span>
-                <ChevronDown className="w-4 h-4 text-slate-500" />
-              </button>
+                <ShoppingCart className="w-6 h-6 text-slate-700" />
+                {cart.length > 0 && (
+                  <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 bg-red-600 text-white text-xs font-semibold rounded-full shadow-md">
+                    {cart.length}
+                  </span>
+                )}
+              </Link>
 
-              {menuOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg">
-                  <Link
-                    to="/profile"
-                    className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    Profile
-                  </Link>
-                  <button
-                    onClick={async () => {
-                      await logout(); // 👈 giờ là async
-                      setMenuOpen(false);
-                      navigate("/login");
-                    }}
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-slate-100"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
+              {/* Menu user */}
+              <div className="relative">
+                <button
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-100 transition"
+                  onClick={() => setMenuOpen(!menuOpen)}
+                >
+                  <img
+                    src={user?.avatar || defaultAvatar}
+                    alt="avatar"
+                    className="w-9 h-9 rounded-full object-cover border border-slate-200 shadow-sm"
+                  />
+                  <span className="text-slate-700 font-medium">{user.name || user.email}</span>
+                  <ChevronDown className="w-4 h-4 text-slate-500" />
+                </button>
+
+                {menuOpen && (
+                  <div className="absolute right-0 mt-2 w-44 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden animate-fade-in">
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Profile
+                    </Link>
+                    <button
+                      onClick={async () => {
+                        await logout();
+                        setMenuOpen(false);
+                        navigate("/login");
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+
+            </>
           )}
         </div>
 
@@ -159,6 +178,21 @@ const Header = () => {
                 </>
               ) : (
                 <>
+                  {/* Giỏ hàng mobile */}
+                  <Link
+                    to="/cart"
+                    onClick={closeMenu}
+                    className="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded flex items-center gap-2 relative"
+                  >
+                    <ShoppingCart className="w-5 h-5" />
+                    My Bookings
+                    {cart.length > 0 && (
+                      <span className="absolute left-28 top-2 bg-red-600 text-white text-xs rounded-full px-1">
+                        {cart.length}
+                      </span>
+                    )}
+                  </Link>
+
                   <Link
                     to="/profile"
                     onClick={closeMenu}
@@ -168,7 +202,7 @@ const Header = () => {
                   </Link>
                   <button
                     onClick={async () => {
-                      await logout(); // 👈 giờ là async
+                      await logout();
                       setMenuOpen(false);
                       navigate("/login");
                     }}
