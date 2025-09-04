@@ -33,6 +33,7 @@ const Booking = () => {
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Load addons
   useEffect(() => {
@@ -54,10 +55,10 @@ const Booking = () => {
   useEffect(() => {
     if (!user) {
       alert('Vui lòng đăng nhập để đặt phòng');
-      navigate('/login');
+      navigate('/login', { state: { from: location.pathname, room } });
       return;
     }
-  }, [user, navigate]);
+  }, [user, navigate, location, room]);
 
   // Redirect nếu không có room
   if (!room) {
@@ -78,6 +79,7 @@ const Booking = () => {
 
   // Handlers
   const handleDateTimeChange = (field, value) => {
+    setErrorMessage(''); // Clear error when user changes input
     switch (field) {
       case 'checkInDate':
         setCheckInDate(value);
@@ -95,6 +97,7 @@ const Booking = () => {
   };
 
   const handleGuestChange = (type, value) => {
+    setErrorMessage(''); // Clear error when user changes input
     if (type === 'adults') {
       setAdults(value);
     } else if (type === 'children') {
@@ -119,8 +122,10 @@ const Booking = () => {
   };
 
   const handleAddToCart = async () => {
+    setErrorMessage('');
+    
     if (!isBookingValid()) {
-      alert('Vui lòng điền đầy đủ thông tin đặt phòng');
+      setErrorMessage('Vui lòng điền đầy đủ thông tin đặt phòng');
       return;
     }
 
@@ -153,12 +158,21 @@ const Booking = () => {
         totalPrice
       };
 
+      console.log('Submitting booking data:', bookingData);
+
       // Add to cart using backend API
       const response = await addToCart(bookingData);
+      
+      console.log('Add to cart response:', response);
       
       if (response) {
         // Show success message
         setShowSuccess(true);
+        
+        // Check if using fallback
+        if (response.fallback) {
+          setErrorMessage('Lưu ý: Đang sử dụng giỏ hàng tạm thời do lỗi kết nối server');
+        }
 
         // Auto hide success message and navigate
         setTimeout(() => {
@@ -172,14 +186,16 @@ const Booking = () => {
       
       // Handle specific error cases
       if (error.response?.status === 401) {
-        alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
-        navigate('/login');
+        setErrorMessage('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
+        setTimeout(() => navigate('/login'), 2000);
       } else if (error.response?.status === 400) {
-        alert(error.response.data.message || 'Dữ liệu không hợp lệ');
+        // Log detailed error for debugging
+        console.error('400 Error details:', error.response.data);
+        setErrorMessage(error.response.data?.message || 'Dữ liệu không hợp lệ. Vui lòng kiểm tra lại thông tin.');
       } else if (error.response?.status === 409) {
-        alert('Phòng này đã có người đặt hoặc không còn trống. Vui lòng chọn phòng khác.');
+        setErrorMessage('Phòng này đã có người đặt hoặc không còn trống. Vui lòng chọn phòng khác.');
       } else {
-        alert('Có lỗi xảy ra khi thêm vào giỏ hàng. Vui lòng thử lại.');
+        setErrorMessage(error.message || 'Có lỗi xảy ra khi thêm vào giỏ hàng. Vui lòng thử lại.');
       }
     } finally {
       setIsAdding(false);
@@ -210,6 +226,13 @@ const Booking = () => {
         <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in">
           <CheckCircle className="w-5 h-5" />
           Đã thêm vào giỏ hàng thành công!
+        </div>
+      )}
+      
+      {/* Error Notification */}
+      {errorMessage && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg animate-fade-in">
+          {errorMessage}
         </div>
       )}
       
