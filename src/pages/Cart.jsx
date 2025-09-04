@@ -1,5 +1,5 @@
-// src/pages/Cart.jsx - Updated with selective checkout
-import React, { useContext, useState } from 'react';
+// src/pages/Cart.jsx - Fixed version
+import React, { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -10,7 +10,14 @@ import { Trash2, Plus, Minus, Calendar, Users, ShoppingBag, ArrowLeft } from 'lu
 const Cart = () => {
   const navigate = useNavigate();
   const { cart, removeFromCart, updateCartItem, clearCart } = useContext(CartContext);
-  const [selectedItems, setSelectedItems] = useState(new Set(cart.map(item => item.id))); // Default: select all
+  const [selectedItems, setSelectedItems] = useState(new Set());
+  
+  // Initialize selected items when cart loads
+  useEffect(() => {
+    if (cart && cart.length > 0) {
+      setSelectedItems(new Set(cart.map(item => item.id)));
+    }
+  }, [cart]);
 
   const updateQuantity = (itemId, newQuantity) => {
     if (newQuantity <= 0) {
@@ -27,17 +34,25 @@ const Cart = () => {
     const item = cart.find(item => item.id === itemId);
     if (!item) return;
 
-    // Recalculate pricing
-    const nights = item.nights;
-    const roomTotal = nights * newQuantity * (item.room?.price || 0);
-    const addonsTotal = item.addonsTotal; // Keep addons same
+    // Calculate pricing properly
+    const nights = item.nights || 1;
+    const roomPrice = Number(item.room?.price) || 0;
+    const roomTotal = nights * newQuantity * roomPrice;
+    
+    // Calculate addons total
+    const addonsTotal = (item.selectedAddons || []).reduce((total, addon) => {
+      return total + (Number(addon.price) * (addon.quantity || 1));
+    }, 0);
+    
     const subtotal = roomTotal + addonsTotal;
     const tax = subtotal * 0.1;
     const totalPrice = subtotal + tax;
 
+    // Update the item
     updateCartItem(itemId, {
       quantity: newQuantity,
       roomTotal,
+      addonsTotal,
       totalPrice
     });
   };
@@ -67,21 +82,52 @@ const Cart = () => {
   };
 
   const getSelectedTotalPrice = () => {
-    return getSelectedItems().reduce((total, item) => total + (item.totalPrice || 0), 0);
+    return getSelectedItems().reduce((total, item) => {
+      const itemTotal = Number(item.totalPrice) || 0;
+      return total + itemTotal;
+    }, 0);
   };
 
   const handleCheckout = () => {
     const selectedItemsArray = getSelectedItems();
-    
     if (selectedItemsArray.length === 0) {
       alert('Vui lòng chọn ít nhất một mục để thanh toán');
       return;
     }
 
-    // Navigate to payment confirmation with selected items only
-    navigate('/booking/confirm', { 
-      state: { cartItems: selectedItemsArray }
+    const totalAmount = getSelectedTotalPrice();
+
+    // Lấy bookingId từ item (hoặc từ context nếu bạn có sẵn)
+    const bookingId = selectedItemsArray[0].id;
+    if (!bookingId) {
+    alert("Không tìm thấy bookingId trong giỏ hàng");
+    return;
+  }
+
+    navigate('/payment', { 
+      state: { cartItems: selectedItemsArray, totalAmount, bookingId }
     });
+  };
+
+  // Helper function to get image URL
+  const getRoomImage = (item) => {
+    // Try different possible image sources
+    if (item.room?.image) return item.room.image;
+    if (item.room?.roomImagePaths?.[0]) return item.room.roomImagePaths[0];
+    if (item.roomImagePaths?.[0]) return item.roomImagePaths[0];
+    return '/placeholder.jpg';
+  };
+
+  // Helper function to safely get price
+  const getRoomPrice = (item) => {
+    const price = Number(item.room?.price) || Number(item.roomPrice) || 0;
+    return price;
+  };
+
+  // Helper function to safely get total price
+  const getItemTotalPrice = (item) => {
+    const total = Number(item.totalPrice) || 0;
+    return total;
   };
 
   if (cart.length === 0) {
@@ -148,119 +194,131 @@ const Cart = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-4">
-              {cart.map((item) => (
-                <div key={item.id} className={`bg-white rounded-lg border p-6 transition-all ${
-                  selectedItems.has(item.id) 
-                    ? 'border-blue-300 ring-2 ring-blue-100' 
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}>
-                  
-                  {/* Selection Checkbox + Room Header */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-4">
-                      <input
-                        type="checkbox"
-                        checked={selectedItems.has(item.id)}
-                        onChange={() => handleItemSelect(item.id)}
-                        className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                      />
-                      <img 
-                        src={item.room?.image || item.room?.roomImagePaths?.[0]} 
-                        alt={item.room?.name}
-                        className="w-16 h-16 rounded-lg object-cover"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = '/placeholder.jpg';
-                        }}
-                      />
-                      <div>
-                        <h3 className="font-semibold text-gray-800">{item.room?.name}</h3>
-                        <p className="text-sm text-gray-600">
-                          {item.room?.price?.toLocaleString('vi-VN')}₫/đêm
+              {cart.map((item) => {
+                const roomPrice = getRoomPrice(item);
+                const totalPrice = getItemTotalPrice(item);
+                const roomImage = getRoomImage(item);
+                
+                return (
+                  <div key={item.id} className={`bg-white rounded-lg border p-6 transition-all ${
+                    selectedItems.has(item.id) 
+                      ? 'border-blue-300 ring-2 ring-blue-100' 
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}>
+                    
+                    {/* Selection Checkbox + Room Header */}
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.has(item.id)}
+                          onChange={() => handleItemSelect(item.id)}
+                          className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <img 
+                          src={'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCI_mI-HBIrmloyHsQCGaC_GWK43dAiqD6Bw&s'}
+                          alt={item.room?.name || 'Room'}
+                          className="w-16 h-16 rounded-lg object-cover"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCI_mI-HBIrmloyHsQCGaC_GWK43dAiqD6Bw&s';
+                          }}
+                        />
+                        <div>
+                          <h3 className="font-semibold text-gray-800">
+                            {item.room?.name || 'Phòng Deluxe'}
+                          </h3>
+                          <p className="text-sm text-gray-600">
+                            {roomPrice > 0 ? `${roomPrice.toLocaleString('vi-VN')}₫/đêm` : 'Liên hệ'}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <button
+                        onClick={() => removeFromCart(item.id)}
+                        className="text-red-600 hover:text-red-800 p-2 rounded-lg hover:bg-red-50 transition-colors"
+                        title="Xóa khỏi giỏ hàng"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    {/* Booking Details */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm">
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Calendar className="w-4 h-4" />
+                        <span>
+                          {item.checkInDate || 'Chưa chọn'} → {item.checkOutDate || 'Chưa chọn'} 
+                          {item.nights && ` (${item.nights} đêm)`}
+                        </span>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Users className="w-4 h-4" />
+                        <span>
+                          {item.adults || 1} người lớn
+                          {item.children > 0 && `, ${item.children} trẻ em`}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Quantity Selector */}
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-gray-600">Số phòng:</span>
+                        <div className="flex items-center border rounded-lg overflow-hidden">
+                          <button
+                            onClick={() => updateQuantity(item.id, (item.quantity || 1) - 1)}
+                            className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                          >
+                            <Minus className="w-4 h-4" />
+                          </button>
+                          <span className="w-12 text-center font-semibold bg-gray-50">
+                            {item.quantity || 1}
+                          </span>
+                          <button
+                            onClick={() => updateQuantity(item.id, (item.quantity || 1) + 1)}
+                            className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="text-right">
+                        <p className="text-lg font-semibold text-blue-600">
+                          {totalPrice > 0 ? `${totalPrice.toLocaleString('vi-VN')}₫` : 'NaN₫'}
                         </p>
-                      </div>
-                    </div>
-                    
-                    <button
-                      onClick={() => removeFromCart(item.id)}
-                      className="text-red-600 hover:text-red-800 p-2 rounded-lg hover:bg-red-50 transition-colors"
-                      title="Xóa khỏi giỏ hàng"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  </div>
-
-                  {/* Booking Details */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm">
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <Calendar className="w-4 h-4" />
-                      <span>
-                        {item.checkInDate} → {item.checkOutDate} ({item.nights} đêm)
-                      </span>
-                    </div>
-                    
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <Users className="w-4 h-4" />
-                      <span>
-                        {item.adults} người lớn{item.children > 0 && `, ${item.children} trẻ em`}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Quantity Selector */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm text-gray-600">Số phòng:</span>
-                      <div className="flex items-center border rounded-lg overflow-hidden">
-                        <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 transition-colors"
-                        >
-                          <Minus className="w-4 h-4" />
-                        </button>
-                        <span className="w-12 text-center font-semibold bg-gray-50">{item.quantity}</span>
-                        <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="w-8 h-8 flex items-center justify-center hover:bg-gray-50 transition-colors"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </button>
+                        {selectedItems.has(item.id) && (
+                          <p className="text-xs text-green-600">✓ Sẽ thanh toán</p>
+                        )}
                       </div>
                     </div>
 
-                    <div className="text-right">
-                      <p className="text-lg font-semibold text-blue-600">
-                        {item.totalPrice?.toLocaleString('vi-VN')}₫
-                      </p>
-                      {selectedItems.has(item.id) && (
-                        <p className="text-xs text-green-600">✓ Sẽ thanh toán</p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Addons */}
-                  {item.selectedAddons && item.selectedAddons.length > 0 && (
-                    <div className="border-t border-gray-100 pt-4">
-                      <h4 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-                        <ShoppingBag className="w-4 h-4" />
-                        Dịch vụ thêm:
-                      </h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {item.selectedAddons.map((addon) => (
-                          <div key={addon.id} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg text-sm">
-                            <span className="text-blue-800 font-medium">
-                              {addon.addonName} x{addon.quantity}
-                            </span>
-                            <span className="font-semibold text-blue-600">
-                              {(Number(addon.price) * addon.quantity).toLocaleString('vi-VN')}₫
-                            </span>
-                          </div>
-                        ))}
+                    {/* Addons */}
+                    {item.selectedAddons && item.selectedAddons.length > 0 && (
+                      <div className="border-t border-gray-100 pt-4">
+                        <h4 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+                          <ShoppingBag className="w-4 h-4" />
+                          Dịch vụ thêm:
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {item.selectedAddons.map((addon, index) => (
+                            <div key={addon.id || index} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg text-sm">
+                              <span className="text-blue-800 font-medium">
+                                {addon.addonName || addon.name} x{addon.quantity || 1}
+                              </span>
+                              <span className="font-semibold text-blue-600">
+                                {(Number(addon.price) * (addon.quantity || 1)).toLocaleString('vi-VN')}₫
+                              </span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-              ))}
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
             {/* Cart Summary - Sticky */}
@@ -273,16 +331,19 @@ const Cart = () => {
                 {selectedItems.size > 0 ? (
                   <>
                     <div className="space-y-3 mb-6">
-                      {getSelectedItems().map((item) => (
-                        <div key={item.id} className="flex justify-between text-sm">
-                          <span className="text-gray-600">
-                            {item.room?.name} x{item.quantity}
-                          </span>
-                          <span className="font-medium">
-                            {item.totalPrice?.toLocaleString('vi-VN')}₫
-                          </span>
-                        </div>
-                      ))}
+                      {getSelectedItems().map((item) => {
+                        const totalPrice = getItemTotalPrice(item);
+                        return (
+                          <div key={item.id} className="flex justify-between text-sm">
+                            <span className="text-gray-600">
+                              {item.room?.name || 'Phòng'} x{item.quantity || 1}
+                            </span>
+                            <span className="font-medium">
+                              {totalPrice > 0 ? `${totalPrice.toLocaleString('vi-VN')}₫` : '0₫'}
+                            </span>
+                          </div>
+                        );
+                      })}
                     </div>
                     
                     <div className="border-t border-gray-200 pt-4 mb-6">
