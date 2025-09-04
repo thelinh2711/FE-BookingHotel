@@ -33,7 +33,6 @@ const GoogleCallback = () => {
     }
   }, [location, navigate, setUser]);
 
-  return <div>Loading...</div>;
 };
 
 export default GoogleCallback;

@@ -20,7 +20,7 @@ const CartProvider = ({ children }) => {
 
   const fetchCart = async () => {
     if (!user) return;
-
+    
     try {
       setLoading(true);
       const response = await bookingApi.getCart();
@@ -28,16 +28,7 @@ const CartProvider = ({ children }) => {
       setCart(response.bookingRooms || []);
     } catch (error) {
       console.error('Error fetching cart:', error);
-
-      // Fallback to localStorage
-      try {
-        const localCart = JSON.parse(localStorage.getItem('bookingCart') || '[]');
-        setCart(localCart);
-        console.log('Using localStorage cart as fallback');
-      } catch (localError) {
-        console.error('Error loading localStorage cart:', localError);
-        setCart([]);
-      }
+      setCart([]);
     } finally {
       setLoading(false);
     }
@@ -52,92 +43,29 @@ const CartProvider = ({ children }) => {
 
     try {
       setLoading(true);
-
-      // Validate required data
-      if (!bookingData.room?.id) {
-        throw new Error('Thông tin phòng không hợp lệ');
-      }
-
-      if (!bookingData.checkInDate || !bookingData.checkOutDate) {
-        throw new Error('Vui lòng chọn ngày check-in và check-out');
-      }
-
-      if (new Date(bookingData.checkOutDate) <= new Date(bookingData.checkInDate)) {
-        throw new Error('Ngày check-out phải sau ngày check-in');
-      }
-
+      
       // Transform frontend data to backend format
       const bookingRoomRequest = {
         roomClassId: bookingData.room.id,
-        quantity: bookingData.quantity || 1,
-        checkinDate: `${bookingData.checkInDate}T${bookingData.checkInTime || '14:00'}:00`,
-        checkoutDate: `${bookingData.checkOutDate}T${bookingData.checkOutTime || '12:00'}:00`,
-        numAdults: bookingData.adults || 1,
-        numChildren: bookingData.children || 0,
-        addons: (bookingData.selectedAddons || []).map(addon => ({
+        quantity: bookingData.quantity,
+        checkinDate: `${bookingData.checkInDate}T${bookingData.checkInTime}:00`,
+        checkoutDate: `${bookingData.checkOutDate}T${bookingData.checkOutTime}:00`,
+        numAdults: bookingData.adults,
+        numChildren: bookingData.children,
+        addons: bookingData.selectedAddons.map(addon => ({
           addonId: addon.id,
-          quantity: addon.quantity || 1
+          quantity: addon.quantity
         }))
       };
 
-      console.log('Sending booking request:', bookingRoomRequest);
-
       const response = await bookingApi.addToCart(bookingRoomRequest);
-
-      console.log('Cart response:', response);
-
+      
       // Update local cart state
       setCart(response.bookingRooms || []);
-
+      
       return response;
     } catch (error) {
       console.error('Error adding to cart:', error);
-      console.error('Error details:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status
-      });
-
-      // Fallback to localStorage if API is not available
-      if (error.code === 'NETWORK_ERROR' || error.response?.status >= 500) {
-        console.log('API not available, using localStorage fallback');
-
-        try {
-          // Create a cart item for localStorage
-          const cartItem = {
-            id: Date.now(), // Simple ID generation
-            room: bookingData.room,
-            quantity: bookingData.quantity || 1,
-            checkInDate: bookingData.checkInDate,
-            checkOutDate: bookingData.checkOutDate,
-            checkInTime: bookingData.checkInTime || '14:00',
-            checkOutTime: bookingData.checkOutTime || '12:00',
-            adults: bookingData.adults || 1,
-            children: bookingData.children || 0,
-            selectedAddons: bookingData.selectedAddons || [],
-            totalPrice: bookingData.totalPrice || 0,
-            createdAt: new Date().toISOString()
-          };
-
-          // Get existing cart from localStorage
-          const existingCart = JSON.parse(localStorage.getItem('bookingCart') || '[]');
-          const updatedCart = [...existingCart, cartItem];
-
-          // Save to localStorage
-          localStorage.setItem('bookingCart', JSON.stringify(updatedCart));
-
-          // Update local state
-          setCart(updatedCart);
-
-          // Return success response
-          return { success: true, fallback: true, bookingRooms: updatedCart };
-
-        } catch (fallbackError) {
-          console.error('Fallback also failed:', fallbackError);
-          throw error; // Throw original error
-        }
-      }
-
       throw error;
     } finally {
       setLoading(false);
