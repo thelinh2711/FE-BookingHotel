@@ -25,14 +25,19 @@ const Login = () => {
       const res = await authApi.login({ email, password });
       console.log("Login response:", res);
 
+      // Kiểm tra response structure
+      if (res?.code !== 0) {
+        setMessage("❌ Đăng nhập thất bại!");
+        return;
+      }
+
       const token = res?.result?.token;
       if (!token) {
         setMessage("❌ Không tìm thấy token trong response!");
         return;
       }
 
-      // lưu token vào localStorage
-      localStorage.setItem("token", token);
+      // Token đã được lưu trong authApi.login, không cần lưu lại
 
       // lấy user info
       const userData = await authApi.getInfo();

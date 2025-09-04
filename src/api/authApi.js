@@ -4,13 +4,20 @@ import api from "./api";
 const authApi = {
   // ĐÚNG: nhận { email, password }
   login: async ({ email, password }) => {
-    
+
     const response = await api.post("/auth/login", { email, password });
 
     const token = response?.data?.result?.token;
-    if (token) localStorage.setItem("token", token);
+    const refreshToken = response?.data?.result?.refreshToken;
 
-    return response.data; // { code, result: { token, ... } }
+    if (token) {
+      localStorage.setItem("token", token);
+    }
+    if (refreshToken) {
+      localStorage.setItem("refreshToken", refreshToken);
+    }
+
+    return response.data; // { code, result: { token, refreshToken, authenticated } }
   },
 
   getInfo: async () => {
@@ -30,16 +37,21 @@ const authApi = {
 
   googleLogin: async (code) => {
     const response = await api.post("/auth/google", { code });
-    const token = response?.data?.token;
+    const token = response?.data?.result?.token;
+    const refreshToken = response?.data?.result?.refreshToken;
+
     if (token) {
       localStorage.setItem("token", token);
+      if (refreshToken) {
+        localStorage.setItem("refreshToken", refreshToken);
+      }
 
       // 👉 lấy user info ngay sau khi có token
       const userRes = await api.get("/api/users/info", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      return { token, user: userRes.data }; 
+      return { token, refreshToken, user: userRes.data };
     }
 
     return response.data;

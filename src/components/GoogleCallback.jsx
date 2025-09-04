@@ -15,9 +15,7 @@ const GoogleCallback = () => {
     if (code) {
       authApi.googleLogin(code)
         .then(res => {
-          // Lưu token
-          if (res.token) localStorage.setItem("token", res.token);
-          if (res.refreshToken) localStorage.setItem("refreshToken", res.refreshToken);
+          // Token đã được lưu trong authApi.googleLogin, không cần lưu lại
 
           // ✅ cập nhật user ngay, không cần reload
           if (res.user) {

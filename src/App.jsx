@@ -15,11 +15,13 @@ import MyOrders from './pages/MyOrders';
 
 import AdminLayout from './pages/admin/AdminLayout';
 import Dashboard from './pages/admin/Dashboard';
+import HotelsManagement from './pages/admin/HotelsManagement';
 import RoomsManagement from './pages/admin/RoomsManagement';
 import BookingsManagement from './pages/admin/BookingsManagement';
 import UsersManagement from './pages/admin/UsersManagement';
 import ReportsManagement from './pages/admin/ReportsManagement';
 import AmenitiesManagement from './pages/admin/AmenitiesManagement';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -39,9 +41,14 @@ function App() {
       
       <Route path="/orders" element={<MyOrders />} />
     
-      {/* Admin Routes */}
-      <Route path="/admin" element={<AdminLayout />}>
+      {/* Admin Routes - Protected */}
+      <Route path="/admin" element={
+        <ProtectedRoute requiredRole="ADMIN">
+          <AdminLayout />
+        </ProtectedRoute>
+      }>
         <Route index element={<Dashboard />} />
+        <Route path="hotels" element={<HotelsManagement />} />
         <Route path="rooms" element={<RoomsManagement />} />
         <Route path="bookings" element={<BookingsManagement />} />
         <Route path="users" element={<UsersManagement />} />

@@ -155,10 +155,15 @@ const Booking = () => {
 
       // Add to cart using backend API
       const response = await addToCart(bookingData);
-      
+
       if (response) {
         // Show success message
         setShowSuccess(true);
+
+        // Show different message for fallback
+        if (response.fallback) {
+          console.log('Added to cart using localStorage fallback');
+        }
 
         // Auto hide success message and navigate
         setTimeout(() => {
@@ -169,17 +174,29 @@ const Booking = () => {
 
     } catch (error) {
       console.error('Error adding to cart:', error);
-      
+      console.error('Error details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message,
+        config: error.config
+      });
+
       // Handle specific error cases
       if (error.response?.status === 401) {
         alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
         navigate('/login');
       } else if (error.response?.status === 400) {
-        alert(error.response.data.message || 'Dữ liệu không hợp lệ');
+        const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Dữ liệu không hợp lệ';
+        alert(`Lỗi: ${errorMessage}`);
       } else if (error.response?.status === 409) {
         alert('Phòng này đã có người đặt hoặc không còn trống. Vui lòng chọn phòng khác.');
+      } else if (error.response?.status === 500) {
+        alert('Lỗi server. Vui lòng thử lại sau.');
+      } else if (error.code === 'NETWORK_ERROR' || !error.response) {
+        alert('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.');
       } else {
-        alert('Có lỗi xảy ra khi thêm vào giỏ hàng. Vui lòng thử lại.');
+        const errorMessage = error.response?.data?.message || error.message || 'Có lỗi xảy ra khi thêm vào giỏ hàng';
+        alert(`Lỗi: ${errorMessage}. Vui lòng thử lại.`);
       }
     } finally {
       setIsAdding(false);
